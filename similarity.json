@@ -1,0 +1,74 @@
+{
+    "test_cases": [
+        {
+            "test_case_id": "pytorch_1",
+            "problem_description": "Fix the bug in PyTorch's _make_tensor function where it's not properly handling empty tensors with no elements.",
+            "evaluation": {
+                "exact_match": false,
+                "similarity": 0.8128,
+                "metrics": {
+                    "line_similarity": 0.6667,
+                    "token_similarity": 0.9286,
+                    "structure_similarity": 0.7143,
+                    "length_similarity": 0.9849
+                }
+            }
+        },
+        {
+            "test_case_id": "transformers_1",
+            "problem_description": "Fix the bug in the Transformers library where the get_special_tokens_mask method doesn't properly handle already padded sequences.",
+            "evaluation": {
+                "exact_match": false,
+                "similarity": 0.8785,
+                "metrics": {
+                    "line_similarity": 0.7143,
+                    "token_similarity": 0.9259,
+                    "structure_similarity": 1.0000,
+                    "length_similarity": 0.9383
+                }
+            }
+        },
+        {
+            "test_case_id": "pandas_1",
+            "problem_description": "Fix the bug in pandas where the to_numpy method doesn't properly handle datetime64 arrays with mixed timezones.",
+            "evaluation": {
+                "exact_match": false,
+                "similarity": 0.3967,
+                "metrics": {
+                    "line_similarity": 0.1667,
+                    "token_similarity": 0.5000,
+                    "structure_similarity": 0.4000,
+                    "length_similarity": 0.6667
+                }
+            }
+        },
+        {
+            "test_case_id": "requests_1",
+            "problem_description": "Fix the security vulnerability in the requests library where the SSL certificate verification can be bypassed.",
+            "evaluation": {
+                "exact_match": false,
+                "similarity": 0.6572,
+                "metrics": {
+                    "line_similarity": 0.4615,
+                    "token_similarity": 0.9032,
+                    "structure_similarity": 0.3333,
+                    "length_similarity": 0.9081
+                }
+            }
+        },
+        {
+            "test_case_id": "fastapi_1",
+            "problem_description": "Fix the bug in FastAPI's dependency injection where optional dependencies with default values are not properly handled.",
+            "evaluation": {
+                "exact_match": false,
+                "similarity": 0.5246,
+                "metrics": {
+                    "line_similarity": 0.1892,
+                    "token_similarity": 0.8167,
+                    "structure_similarity": 0.2857,
+                    "length_similarity": 0.8404
+                }
+            }
+        }
+    ]
+}

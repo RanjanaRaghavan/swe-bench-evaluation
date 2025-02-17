@@ -1,0 +1,29 @@
+{
+  "results": [
+    {
+      "test_case_id": "pytorch_1",
+      "problem_description": "Fix the bug in PyTorch's `_make_tensor` function where it's not properly handling empty tensors with no elements.",
+      "generated_solution": "def _make_tensor(x, device): \n    if isinstance(x, torch.Tensor): \n        if device is not None: \n            x = x.to(device) \n        return x \n    if isinstance(x, (list, tuple)): \n        return torch.tensor([]).to(device) if not x else torch.tensor(x, device=device) \n    if isinstance(x, np.ndarray): \n        return torch.from_numpy(x).to(device) \n    return x"
+    },
+    {
+      "test_case_id": "transformers_1",
+      "problem_description": "Fix the bug in the Transformers library where the `get_special_tokens_mask` method doesn't properly handle already padded sequences.",
+      "generated_solution": "def get_special_tokens_mask(self, token_ids_0, token_ids_1=None, already_has_special_tokens=False):\n    if already_has_special_tokens:\n        if token_ids_1 is not None:\n            raise ValueError(\n                \"You should not supply a second sequence if the provided sequence of \"\n                \"ids is already formatted with special tokens for the model.\"\n            )\n        return list(map(lambda x: 1 if self._is_padding_token(x) else 0, token_ids_0))\n\n    if token_ids_1 is None:\n        return [1] + ([0] * len(token_ids_0)) + [1]\n    return [1] + ([0] * (len(token_ids_0) + len(token_ids_1))) + [1]\n\ndef _is_padding_token(self, token_id):\n    return token_id == self.pad_token_id"
+    },
+    {
+      "test_case_id": "pandas_1",
+      "problem_description": "Fix the bug in pandas where the `to_numpy` method doesn't properly handle datetime64 arrays with mixed timezones.",
+      "generated_solution": "def to_numpy(self):\n    if self.dtype.kind == 'M':\n        tz-aware-ness = self.tz_localize()\n        return np.asarray(tz-aware-ness.asi8)\n    return np.asarray(self)"
+    },
+    {
+      "test_case_id": "requests_1",
+      "problem_description": "Fix the security vulnerability in the requests library where the SSL certificate verification can be bypassed.",
+      "generated_solution": "def merge_environment_settings(url, proxies, stream, verify, cert):\n    env_proxies = get_environ_proxies(url, no_proxy=None)\n    merged_proxies = merge_setting(proxies, env_proxies)\n    if not verify:\n        verify = False\n    merged_verify = merge_setting(verify, os.getenv('REQUESTS_CA_BUNDLE', None))\n    merged_cert = merge_setting(cert, None)\n\n    return merged_proxies, merged_verify, merged_cert"
+    },
+    {
+      "test_case_id": "fastapi_1",
+      "problem_description": "Fix the bug in FastAPI's dependency injection where optional dependencies with default values are not properly handled.",
+      "generated_solution": "async def solve_dependencies(\n    *, request: Request, dependant: Dependant, body: Optional[Union[Dict, Any]] = None\n) -> Tuple[Dict, List[ErrorWrapper]]:\n    values: Dict[str, Any] = {}\n    errors: List[ErrorWrapper] = []\n    for dependency in dependant.dependencies:\n        if body is not None and dependency.default is not None:\n            values[dependency.name] = body.get(dependency.name, dependency.default)\n        elif dependency.cache:\n            dependency_value = await request.app.dependency_cache.get_dependency_value(\n                dependency=dependency,\n                request=request,\n                body=body,\n            )\n        else:\n            dependency_value = await request.app.dependency_overrides.get(\n                dependency.call, dependency.default\n            )(request=request)\n        values[dependency.name] = dependency_value\n    return values, errors"
+    }
+  ]
+}

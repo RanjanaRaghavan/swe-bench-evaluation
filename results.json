@@ -1,0 +1,97 @@
+[
+  {
+    "test_case_id": "pytorch_1",
+    "generated_solution": "```\ndef _make_tensor(x, device):\n    if isinstance(x, torch.Tensor):\n        if device is not None:\n            x = x.to(device)\n        return x\n    if isinstance(x, (list, tuple)):\n        if not x:  # check for empty tensor\n            return torch.tensor([])\n        return torch.tensor(x, device=device)\n    if isinstance(x, np.ndarray):\n        return torch.from_numpy(x).to(device)\n    return x",
+    "metadata": {
+      "model": "ollama-llama3",
+      "temperature": 0.7,
+      "max_length": 2048
+    },
+    "evaluation": {
+      "exact_match": false,
+      "similarity": 0.8127781765972721,
+      "metrics": {
+        "line_similarity": 0.6666666666666666,
+        "token_similarity": 0.9285714285714286,
+        "structure_similarity": 0.7142857142857143,
+        "length_similarity": 0.9849246231155779
+      }
+    }
+  },
+  {
+    "test_case_id": "transformers_1",
+    "generated_solution": "```\ndef get_special_tokens_mask(self, token_ids_0, token_ids_1=None, already_has_special_tokens=False):\n    if already_has_special_tokens:\n        if token_ids_1 is not None:\n            raise ValueError(\n                \"You should not supply a second sequence if the provided sequence of \"\n                \"ids is already formatted with special tokens for the model.\"\n            )\n        return [1 if x in [self.sep_token_id, self.cls_token_id] else 0 for x in token_ids_0]\n\n    if token_ids_1 is None:\n        return [1] + ([0] * len(token_ids_0)) + [1]\n    return [1] + ([0] * (len(token_ids_0) + len(token_ids_1))) + [1]",
+    "metadata": {
+      "model": "ollama-llama3",
+      "temperature": 0.7,
+      "max_length": 2048
+    },
+    "evaluation": {
+      "exact_match": false,
+      "similarity": 0.8784906711222501,
+      "metrics": {
+        "line_similarity": 0.7142857142857143,
+        "token_similarity": 0.9259259259259259,
+        "structure_similarity": 1.0,
+        "length_similarity": 0.9383458646616541
+      }
+    }
+  },
+  {
+    "test_case_id": "pandas_1",
+    "generated_solution": "```\ndef to_numpy(self):\n    if self.dtype.kind == 'M':\n        result = []\n        for dt in self:\n            tz = dt.tz\n            tz_name = tz.zone\n            if pd.tslib.iNaT == tz:\n                tz_name = None\n            dt64 = dt.to_pydatetime()\n            result.append(np.datetime64(dt64, tz_name))\n        return np.array(result)\n    return np.asarray(self)",
+    "metadata": {
+      "model": "ollama-llama3",
+      "temperature": 0.7,
+      "max_length": 2048
+    },
+    "evaluation": {
+      "exact_match": false,
+      "similarity": 0.3966666666666667,
+      "metrics": {
+        "line_similarity": 0.16666666666666666,
+        "token_similarity": 0.5,
+        "structure_similarity": 0.4,
+        "length_similarity": 0.6666666666666667
+      }
+    }
+  },
+  {
+    "test_case_id": "requests_1",
+    "generated_solution": "```\ndef merge_environment_settings(url, proxies, stream, verify, cert):\n    env_proxies = get_environ_proxies(url, no_proxy=None)\n    merged_proxies = merge_setting(proxies, env_proxies)\n    if not verify:\n        verify = True\n    merged_verify = merge_setting(verify, os.getenv('REQUESTS_CA_BUNDLE', None))\n    merged_cert = merge_setting(cert, None)\n\n    return merged_proxies, merged_verify, merged_cert\n```",
+    "metadata": {
+      "model": "ollama-llama3",
+      "temperature": 0.7,
+      "max_length": 2048
+    },
+    "evaluation": {
+      "exact_match": false,
+      "similarity": 0.6572257025967427,
+      "metrics": {
+        "line_similarity": 0.46153846153846156,
+        "token_similarity": 0.9032258064516129,
+        "structure_similarity": 0.3333333333333333,
+        "length_similarity": 0.9080717488789237
+      }
+    }
+  },
+  {
+    "test_case_id": "fastapi_1",
+    "generated_solution": "```\nasync def solve_dependencies(\n    *, request: Request, dependant: Dependant, body: Optional[Union[Dict, Any]] = None\n) -> Tuple[Dict, List[ErrorWrapper]]:\n    values: Dict[str, Any] = {}\n    errors: List[ErrorWrapper] = []\n    for dependency in dependant.dependencies:\n        if dependency.cache and body is not None:\n            dependency_value = await request.app.dependency_cache.get_dependency_value(\n                dependency=dependency,\n                request=request,\n                body=body,\n            )\n        elif not dependency.cache:\n            dependency_value = await request.app.dependency_overrides.get(\n                dependency.call, dependency.call\n            )(request=request)\n        else:\n            dependency_value = None if dependency.default is not None else dependency.default\n        values[dependency.name] = dependency_value\n    return values, errors",
+    "metadata": {
+      "model": "ollama-llama3",
+      "temperature": 0.7,
+      "max_length": 2048
+    },
+    "evaluation": {
+      "exact_match": false,
+      "similarity": 0.5246038392517266,
+      "metrics": {
+        "line_similarity": 0.1891891891891892,
+        "token_similarity": 0.8166666666666667,
+        "structure_similarity": 0.2857142857142857,
+        "length_similarity": 0.8403755868544601
+      }
+    }
+  }
+]

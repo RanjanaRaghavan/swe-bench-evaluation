@@ -1,0 +1,6 @@
+transformers>=4.34.0
+torch>=2.0.0
+git+https://github.com/swe-bench/SWE-bench.git
+pytest>=7.1.1
+typing-extensions>=4.5.0
+requests>=2.31.0

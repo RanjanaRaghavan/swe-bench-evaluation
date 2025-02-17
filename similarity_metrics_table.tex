@@ -1,0 +1,25 @@
+\begin{table}[httb!] \small
+\centering
+    \begin{tabularx}{0.95\textwidth}{>{\raggedright\arraybackslash}X c c c c c}
+        \toprule
+        \textbf{Problem} & \textbf{Line} & \textbf{Token} & \textbf{Structure} & \textbf{Length} & \textbf{Overall} \\
+        \midrule
+        \rowcolor{LightBlue} {\footnotesize PyTorch: Empty tensor handling in \texttt{\_make\_tensor}} & 
+        66.67 & 92.86 & 71.43 & 98.49 & \textbf{81.28} \\
+        
+        {\footnotesize Transformers: Padded sequence handling in \texttt{get\_special\_tokens\_mask}} & 
+        71.43 & 92.59 & 100.00 & 93.83 & \textbf{87.85} \\
+        
+        \rowcolor{LightBlue} {\footnotesize Pandas: Mixed timezone handling in \texttt{to\_numpy}} & 
+        16.67 & 50.00 & 40.00 & 66.67 & \textbf{39.67} \\
+        
+        {\footnotesize Requests: SSL certificate verification bypass} & 
+        46.15 & 90.32 & 33.33 & 90.81 & \textbf{65.72} \\
+        
+        \rowcolor{LightBlue} {\footnotesize FastAPI: Default value handling in dependency injection} & 
+        18.92 & 81.67 & 28.57 & 84.04 & \textbf{52.46} \\
+        \bottomrule
+    \end{tabularx}
+    \caption{\textbf{Similarity Metrics for Generated Solutions}.
+    The table shows different similarity metrics for each test case. Higher percentages indicate better matches with the expected solutions. Token similarity consistently shows higher scores, suggesting that the model maintains good API usage even when the exact implementation differs.\label{tab:similarity_metrics}}
+\end{table}

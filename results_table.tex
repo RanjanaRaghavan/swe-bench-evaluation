@@ -1,0 +1,122 @@
+\begin{table*}[t]
+\centering
+\caption{Generated Solutions for Software Engineering Problems}
+\label{tab:results}
+\begin{tabular}{|p{0.35\textwidth}|p{0.55\textwidth}|}
+\hline
+\textbf{Problem Description} & \textbf{Generated Solution} \\
+\hline
+{\footnotesize Fix the bug in PyTorch's \texttt{\_make\_tensor} function where it's not properly handling empty tensors with no elements.} & 
+{\footnotesize
+\begin{verbatim}
+def _make_tensor(x, device): 
+    if isinstance(x, torch.Tensor): 
+        if device is not None: 
+            x = x.to(device) 
+        return x 
+    if isinstance(x, (list, tuple)): 
+        return torch.tensor([]).to(device) \
+            if not x else torch.tensor(x, \
+            device=device) 
+    if isinstance(x, np.ndarray): 
+        return torch.from_numpy(x).to(device) 
+    return x
+\end{verbatim}
+} \\
+\hline
+{\footnotesize Fix the bug in the Transformers library where the \texttt{get\_special\_tokens\_mask} method doesn't properly handle already padded sequences.} & 
+{\footnotesize
+\begin{verbatim}
+def get_special_tokens_mask(self, token_ids_0,
+    token_ids_1=None, 
+    already_has_special_tokens=False):
+    if already_has_special_tokens:
+        if token_ids_1 is not None:
+            raise ValueError(
+                "You should not supply a second " +
+                "sequence if the provided " +
+                "sequence of ids is already " +
+                "formatted with special tokens.")
+        return list(map(lambda x: 
+            1 if self._is_padding_token(x) 
+            else 0, token_ids_0))
+
+    if token_ids_1 is None:
+        return [1] + ([0] * len(token_ids_0)) + [1]
+    return [1] + ([0] * (len(token_ids_0) + \
+        len(token_ids_1))) + [1]
+
+def _is_padding_token(self, token_id):
+    return token_id == self.pad_token_id
+\end{verbatim}
+} \\
+\hline
+{\footnotesize Fix the bug in pandas where the \texttt{to\_numpy} method doesn't properly handle datetime64 arrays with mixed timezones.} & 
+{\footnotesize
+\begin{verbatim}
+def to_numpy(self):
+    if self.dtype.kind == 'M':
+        tz-aware-ness = self.tz_localize()
+        return np.asarray(tz-aware-ness.asi8)
+    return np.asarray(self)
+\end{verbatim}
+} \\
+\hline
+{\footnotesize Fix the security vulnerability in the requests library where the SSL certificate verification can be bypassed.} & 
+{\footnotesize
+\begin{verbatim}
+def merge_environment_settings(url, proxies, 
+    stream, verify, cert):
+    env_proxies = get_environ_proxies(
+        url, no_proxy=None)
+    merged_proxies = merge_setting(
+        proxies, env_proxies)
+    if not verify:
+        verify = False
+    merged_verify = merge_setting(verify, 
+        os.getenv('REQUESTS_CA_BUNDLE', None))
+    merged_cert = merge_setting(cert, None)
+
+    return merged_proxies, merged_verify, \
+        merged_cert
+\end{verbatim}
+} \\
+\hline
+{\footnotesize Fix the bug in FastAPI's dependency injection where optional dependencies with default values are not properly handled.} & 
+{\footnotesize
+\begin{verbatim}
+async def solve_dependencies(
+    *, request: Request, 
+    dependant: Dependant,
+    body: Optional[Union[Dict, Any]] = None
+) -> Tuple[Dict, List[ErrorWrapper]]:
+    values: Dict[str, Any] = {}
+    errors: List[ErrorWrapper] = []
+    for dependency in dependant.dependencies:
+        if body is not None and \
+            dependency.default is not None:
+            values[dependency.name] = \
+                body.get(dependency.name, 
+                    dependency.default)
+        elif dependency.cache:
+            dependency_value = await \
+                request.app.dependency_cache\
+                .get_dependency_value(
+                    dependency=dependency,
+                    request=request,
+                    body=body,
+                )
+        else:
+            dependency_value = await \
+                request.app.dependency_overrides\
+                .get(dependency.call, 
+                    dependency.default)\
+                (request=request)
+        values[dependency.name] = \
+            dependency_value
+    return values, errors
+\end{verbatim}
+} \\
+\hline
+\end{tabular}
+\end{table*}

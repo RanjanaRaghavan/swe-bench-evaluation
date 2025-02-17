@@ -1,0 +1,202 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{caption}
+\usepackage[margin=1in]{geometry}
+\usepackage{minted}
+\usepackage{tcolorbox}
+\usepackage{soul}
+
+% Define colors
+\definecolor{LightGreen}{RGB}{220,255,220}
+\definecolor{LightRed}{RGB}{255,220,220}
+\definecolor{CommentColor}{RGB}{0,100,0}
+
+% Configure code listings
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    commentstyle=\color{CommentColor},
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny,
+    showstringspaces=false,
+    tabsize=4
+}
+
+\title{Analysis of Code Generation Success and Failure Cases}
+\author{SWE-Bench Evaluation}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Case Analysis}
+
+We analyze two representative cases from our evaluation: a successful case with high similarity (87.85\%) and a failure case with low similarity (39.67\%).
+
+\subsection{Success Case: Transformers Library (87.85\% Similarity)}
+
+\begin{tcolorbox}[colback=LightGreen!10,title=Problem Description]
+Fix the bug in the Transformers library where the \texttt{get\_special\_tokens\_mask} method doesn't properly handle already padded sequences.
+\end{tcolorbox}
+
+\begin{figure}[htbp]
+\begin{center}
+\begin{minipage}{0.48\textwidth}
+\centering
+\textbf{Generated Solution (87.85\% similarity)}
+\end{minipage}%
+\hfill%
+\begin{minipage}{0.48\textwidth}
+\centering
+\textbf{Correct Solution}
+\end{minipage}
+
+\vspace{0.5em}
+
+\begin{minipage}{0.48\textwidth}
+\begin{lstlisting}[language=Python,numbers=left]
+def get_special_tokens_mask(self, 
+    token_ids_0, token_ids_1=None, 
+    already_has_special_tokens=False):
+    if already_has_special_tokens:
+        if token_ids_1 is not None:
+            raise ValueError(
+                "You should not supply a "
+                "second sequence if the "
+                "provided sequence of ids "
+                "is already formatted.")
+        return [1 if x in [
+            self.sep_token_id, 
+            self.cls_token_id
+        ] else 0 for x in token_ids_0]
+
+    if token_ids_1 is None:
+        return [1] + ([0] * len(
+            token_ids_0)) + [1]
+    return [1] + ([0] * (
+        len(token_ids_0) + 
+        len(token_ids_1))) + [1]
+\end{lstlisting}
+\end{minipage}%
+\hfill%
+\begin{minipage}{0.48\textwidth}
+\begin{lstlisting}[language=Python,numbers=left]
+def get_special_tokens_mask(self, 
+    token_ids_0, token_ids_1=None, 
+    already_has_special_tokens=False):
+    if already_has_special_tokens:
+        if token_ids_1 is not None:
+            raise ValueError(
+                "You should not supply a "
+                "second sequence if the "
+                "provided sequence of ids "
+                "is already formatted.")
+        return list(map(lambda x: 
+            1 if x in [
+                self.sep_token_id,
+                self.cls_token_id,
+                self.pad_token_id
+            ] else 0, token_ids_0))
+
+    if token_ids_1 is None:
+        return [1] + ([0] * len(
+            token_ids_0)) + [1]
+    return [1] + ([0] * len(
+        token_ids_0)) + [1] + ([0] * 
+        len(token_ids_1)) + [1]
+\end{lstlisting}
+\end{minipage}
+\end{center}
+\caption{Comparison of Solutions for Transformers Case}
+\end{figure}
+
+\begin{tcolorbox}[colback=LightGreen!10,title=Success Analysis]
+\begin{itemize}
+\item Perfect structure similarity (100\%) - maintains the same control flow
+\item High token similarity (92.59\%) - correct API usage
+\item Only missed including \texttt{pad\_token\_id} in the token check
+\item List comprehension vs map() doesn't affect functionality
+\end{itemize}
+\end{tcolorbox}
+
+\subsection{Failure Case: Pandas Library (39.67\% Similarity)}
+
+\begin{tcolorbox}[colback=LightRed!10,title=Problem Description]
+Fix the bug in pandas where the \texttt{to\_numpy} method doesn't properly handle datetime64 arrays with mixed timezones.
+\end{tcolorbox}
+
+\begin{figure}[htbp]
+\begin{center}
+\begin{minipage}{0.48\textwidth}
+\centering
+\textbf{Generated Solution (39.67\% similarity)}
+\end{minipage}%
+\hfill%
+\begin{minipage}{0.48\textwidth}
+\centering
+\textbf{Correct Solution}
+\end{minipage}
+
+\vspace{0.5em}
+
+\begin{minipage}{0.48\textwidth}
+\begin{lstlisting}[language=Python,numbers=left]
+def to_numpy(self):
+    if self.dtype.kind == 'M':
+        result = []
+        for dt in self:
+            tz = dt.tz
+            tz_name = tz.zone
+            if pd.tslib.iNaT == tz:
+                tz_name = None
+            dt64 = dt.to_pydatetime()
+            result.append(
+                np.datetime64(dt64, 
+                    tz_name))
+        return np.array(result)
+    return np.asarray(self)
+\end{lstlisting}
+\end{minipage}%
+\hfill%
+\begin{minipage}{0.48\textwidth}
+\begin{lstlisting}[language=Python,numbers=left]
+def to_numpy(self):
+    if self.dtype.kind == 'M':
+        if self._hasna:
+            result = self.asi8.copy()
+            result[self.isna()] = \
+                np.datetime64('NaT')
+            return result
+        return self.asi8
+    return np.asarray(self)
+\end{lstlisting}
+\end{minipage}
+\end{center}
+\caption{Comparison of Solutions for Pandas Case}
+\end{figure}
+
+\begin{tcolorbox}[colback=LightRed!10,title=Failure Analysis]
+\begin{itemize}
+\item Very low line similarity (16.67\%) - completely different approach
+\item Uses iteration instead of vectorized operations
+\item Misses the core optimization of using \texttt{asi8} for performance
+\item Handles NaT values differently and less efficiently
+\item Unnecessarily complex timezone handling
+\end{itemize}
+\end{tcolorbox}
+
+\section{Key Insights}
+
+\begin{enumerate}
+\item Success cases maintain core structure and API usage while potentially missing minor details
+\item Token similarity alone isn't sufficient - the pandas case had 50\% token similarity but poor overall performance
+\item Simpler, more performant solutions are sometimes overlooked in favor of more complex approaches
+\item Structure similarity is a strong indicator of solution quality
+\end{enumerate}
+
+\end{document}
